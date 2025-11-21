@@ -14,7 +14,7 @@ services:
       - ./ipfs_data:/data/ipfs
 
     ports:
-      - "4001:4001"            # P2P traffic → required
-      - "4001:4001/udp"
-      - "127.0.0.1:5001:5001"  # API → keep private
-      - "127.0.0.1:8080:8080"  # Gateway → local only
+      - "4101:4001"            # P2P TCP (changed)
+      - "4101:4001/udp"        # P2P UDP (changed)
+      - "127.0.0.1:5101:5001"  # API (changed)
+      - "127.0.0.1:8101:8080"  # Gateway (changed)
