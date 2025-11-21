@@ -1,0 +1,20 @@
+version: '3.9'
+
+services:
+  ipfs:
+    image: ipfs/kubo:v0.38.2
+    container_name: ipfs_node
+    restart: unless-stopped
+
+    environment:
+      IPFS_PROFILE: server
+
+    volumes:
+      - ./ipfs_staging:/export
+      - ./ipfs_data:/data/ipfs
+
+    ports:
+      - "4001:4001"            # P2P traffic → required
+      - "4001:4001/udp"
+      - "127.0.0.1:5001:5001"  # API → keep private
+      - "127.0.0.1:8080:8080"  # Gateway → local only
