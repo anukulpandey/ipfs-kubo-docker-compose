@@ -1,19 +1,21 @@
-# Base IPFS Kubo image
 FROM ipfs/kubo:v0.38.2
 
-# Set environment variables
 ENV IPFS_PROFILE=server
 
-# Create folders inside the container
-RUN mkdir -p /export && mkdir -p /data/ipfs
-
-# Expose ports (internal container ports)
-# Host mapping is done at "docker run" time
+# Expose internal container ports
 EXPOSE 4001/tcp
 EXPOSE 4001/udp
 EXPOSE 5001/tcp
 EXPOSE 8080/tcp
 
-# Default entrypoint (comes from Kubo image)
-ENTRYPOINT ["ipfs"]
-CMD ["daemon", "--migrate=true"]
+# Entry script to auto-init IPFS if repo doesn't exist
+RUN printf '#!/bin/sh\n\
+set -e\n\
+if [ ! -f /data/ipfs/config ]; then\n\
+  echo "No IPFS repo found, running ipfs init...";\n\
+  ipfs init --profile=$IPFS_PROFILE;\n\
+fi;\n\
+exec ipfs daemon --migrate=true\n' \
+> /usr/local/bin/start-ipfs && chmod +x /usr/local/bin/start-ipfs
+
+ENTRYPOINT ["sh", "/usr/local/bin/start-ipfs"]
